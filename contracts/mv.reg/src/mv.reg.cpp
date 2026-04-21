@@ -7,6 +7,7 @@ using namespace eosio;
 namespace {
 
 static constexpr name ntoken_contract = "gnos.ntoken"_n;
+static constexpr name song_reg_contract = "song.reg"_n;
 
 struct [[eosio::table("tokenstats")]] ntoken_stat_probe {
     flon::nasset supply;
@@ -38,6 +39,8 @@ void mvreg::createmv(name creator, uint64_t song_id, std::string title, std::str
     ntoken_stat_probe_table nft_stats(ntoken_contract, ntoken_contract.value);
     auto song_itr = nft_stats.find(song_id);
     check(song_itr != nft_stats.end(), "song nft does not exist");
+    check(song_itr->issuer == song_reg_contract, "song nft must be issued by song.reg");
+    check(song_itr->ipowner == creator, "creator does not control the referenced song nft");
 
     gnos::mv_table mvs(get_self(), get_self().value);
     auto hash_idx = mvs.get_index<"byhash"_n>();

@@ -79,6 +79,11 @@ void gnosntoken::transfer(const name& from, const name& to, const vector<nasset>
     require_auth(from);
     check(is_account(to), "to account does not exist");
     check(memo.size() <= 256, "memo has more than 256 bytes");
+    if (!_gstate.whitelist.empty()) {
+        const bool from_whitelisted = _gstate.whitelist.find(from) != _gstate.whitelist.end();
+        const bool to_whitelisted = _gstate.whitelist.find(to) != _gstate.whitelist.end();
+        check(from_whitelisted || to_whitelisted, "transfer requires a whitelisted sender or receiver");
+    }
 
     auto payer = has_auth(to) ? to : from;
 
@@ -175,6 +180,7 @@ void gnosntoken::setcreator(const name& creator, const bool& to_add) {
         check(_gstate.creators.find(creator) != _gstate.creators.end(), "creator not found:" + creator.to_string());
         _gstate.creators.erase(creator);
     }
+    _global.set(_gstate, get_self());
 }
 
 void gnosntoken::sub_balance(const name& owner, const nasset& value) {

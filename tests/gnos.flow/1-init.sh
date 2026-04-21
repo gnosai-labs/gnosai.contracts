@@ -8,7 +8,6 @@ ntoken=gnos.ntoken
 tba_reg=tba1.reg
 tba_account=tba1.account
 mart=nftv1.mart
-dao=gnos1.dao
 stake=gnos1.stake
 
 payment_token=cisum.token
@@ -46,22 +45,23 @@ mtran $owner $mart "100 FLON"
 mset $mart nftv.mart
 mcli set account permission $mart active --add-code
 
-mreg flon $dao $owner
-mtran $owner $dao "100 FLON"
-mset $dao gnos.dao
-mcli set account permission $dao active --add-code
-
 mreg flon $stake $owner
 mtran $owner $stake "100 FLON"
 mset $stake gnos.stake
 mcli set account permission $stake active --add-code
 
+
+
+mpush gnos.ntoken addwhitelist '["song.reg"]' -p gnos.ntoken
+mpush gnos.ntoken addwhitelist '["nftv.mart"]' -p gnos.ntoken
+mpush gnos.ntoken addwhitelist '["tba.account"]' -p gnos.ntoken
+
+
 mpush $song_reg setglobal "[100,\"10.0000 CISUM\"]" -p $song_reg
-mpush $dao setfee "[100,500,400,\"$platform\",\"$stake\"]" -p $dao
+mpush $mart setfee "[100,500,400,\"$platform\",\"$stake\"]" -p $mart
 mpush $mart setpaytoken "[\"$payment_token\",true]" -p $mart
 mpush $payment_token addconsumewl "[\"$song_reg\"]" -p $payment_token
 mpush $ntoken setcreator "[\"$song_reg\",true]" -p $ntoken
-
 
 
 

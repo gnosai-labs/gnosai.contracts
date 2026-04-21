@@ -1,7 +1,7 @@
 # GNOS Flow
 
 1. 部署模块合约
-2. 配置 `gnos.dao`
+2. 配置 `nftv.mart` 分账参数
 3. 向 `song.reg` 转账 CISUM，memo `SONGCREATE:<issue_count>:<nid>:<token_uri_or_hash>`，自动注册歌曲并铸造 NFT
 4. 其他用户向 `song.reg` 转账 CISUM，memo `SONGBUY:<buy_count>:<nid>`，购买指定 NFT 的剩余库存
 5. 注册 MV `mv.reg::createmv`

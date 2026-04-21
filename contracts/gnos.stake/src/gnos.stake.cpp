@@ -4,6 +4,42 @@
 
 using namespace eosio;
 
+namespace {
+
+static constexpr name ntoken_contract = "gnos.ntoken"_n;
+
+struct [[eosio::table("tokenstats")]] ntoken_stat_probe {
+    flon::nasset supply;
+    flon::nasset max_supply;
+    std::string token_uri;
+    name ipowner;
+    name notary;
+    name issuer;
+    time_point_sec issued_at;
+    time_point_sec notarized_at;
+    bool paused = false;
+
+    uint64_t primary_key() const {
+        return supply.symbol.nid;
+    }
+
+    EOSLIB_SERIALIZE(ntoken_stat_probe, (supply)(max_supply)(token_uri)(ipowner)(notary)(issuer)(issued_at)(notarized_at)(paused))
+};
+
+using ntoken_stat_probe_table = multi_index<"tokenstats"_n, ntoken_stat_probe>;
+
+const ntoken_stat_probe& require_ntoken_stat(uint64_t nft_id, ntoken_stat_probe_table& stats) {
+    auto itr = stats.find(nft_id);
+    check(itr != stats.end(), "nft does not exist");
+    return *itr;
+}
+
+name get_nft_controller(const ntoken_stat_probe& stat) {
+    return stat.ipowner.value == 0 ? stat.issuer : stat.ipowner;
+}
+
+} // namespace
+
 gnos::stake_plan_table::const_iterator gnosstake::require_plan(uint64_t plan_id, gnos::stake_plan_table& plans) const {
     auto itr = plans.find(plan_id);
     check(itr != plans.end(), "plan does not exist");
@@ -49,10 +85,9 @@ uint64_t gnosstake::parse_plan_memo(const std::string& memo, const char* prefix)
 }
 
 void gnosstake::createplan(uint64_t nft_id, name stake_token_contract, symbol stake_symbol, name reward_token_contract, symbol reward_symbol) {
-    gnos::nft_table nfts("gnos.ntoken"_n, "gnos.ntoken"_n.value);
-    auto nft_itr = nfts.find(nft_id);
-    check(nft_itr != nfts.end(), "nft does not exist");
-    require_auth(nft_itr->owner);
+    ntoken_stat_probe_table nft_stats(ntoken_contract, ntoken_contract.value);
+    const auto& nft_stat = require_ntoken_stat(nft_id, nft_stats);
+    require_auth(get_nft_controller(nft_stat));
     check(stake_token_contract.value != 0, "stake token contract is required");
     check(reward_token_contract.value != 0, "reward token contract is required");
     check(stake_symbol.is_valid(), "invalid stake symbol");
@@ -63,7 +98,7 @@ void gnosstake::createplan(uint64_t nft_id, name stake_token_contract, symbol st
     check(nft_idx.find(nft_id) == nft_idx.end(), "plan already exists for nft");
 
     const uint64_t plan_id = gnos::next_id(plans.available_primary_key());
-    plans.emplace(nft_itr->owner, [&](auto& row) {
+    plans.emplace(get_nft_controller(nft_stat), [&](auto& row) {
         row.plan_id = plan_id;
         row.nft_id = nft_id;
         row.stake_token_contract = stake_token_contract;
@@ -136,9 +171,8 @@ void gnosstake::apply_fundreward(uint64_t plan_id, const asset& quantity) {
     gnos::stake_plan_table plans(get_self(), get_self().value);
     auto plan_itr = require_plan(plan_id, plans);
 
-    gnos::nft_table nfts("gnos.ntoken"_n, "gnos.ntoken"_n.value);
-    auto nft_itr = nfts.find(plan_itr->nft_id);
-    check(nft_itr != nfts.end(), "nft does not exist");
+    ntoken_stat_probe_table nft_stats(ntoken_contract, ntoken_contract.value);
+    require_ntoken_stat(plan_itr->nft_id, nft_stats);
 
     check(quantity.is_valid(), "invalid quantity");
     check(quantity.amount > 0, "reward quantity must be positive");
@@ -238,10 +272,9 @@ void gnosstake::ontransfer(name from, name to, asset quantity, std::string memo)
         gnos::stake_plan_table plans(get_self(), get_self().value);
         auto plan_itr = require_plan(reward_plan_id, plans);
 
-        gnos::nft_table nfts("gnos.ntoken"_n, "gnos.ntoken"_n.value);
-        auto nft_itr = nfts.find(plan_itr->nft_id);
-        check(nft_itr != nfts.end(), "nft does not exist");
-        check(from == nft_itr->owner || from == "nftv.mart"_n, "only nft owner or nftv.mart can fund reward");
+        ntoken_stat_probe_table nft_stats(ntoken_contract, ntoken_contract.value);
+        const auto& nft_stat = require_ntoken_stat(plan_itr->nft_id, nft_stats);
+        check(from == get_nft_controller(nft_stat) || from == "nftv.mart"_n, "only nft owner or nftv.mart can fund reward");
         check(get_first_receiver() == plan_itr->reward_token_contract, "reward token contract mismatch");
 
         apply_fundreward(reward_plan_id, quantity);

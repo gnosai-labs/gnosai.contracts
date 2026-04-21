@@ -116,15 +116,6 @@ gnos::bundle_manifest_t tbaaccount::build_manifest(uint64_t tba_id) const {
     return manifest;
 }
 
-void tbaaccount::deposit(uint64_t tba_id, uint8_t asset_type, name asset_contract, unsigned __int128 asset_ref_id, asset quantity, std::string memo) {
-    const name owner = require_tba_owner(tba_id);
-    require_auth(owner);
-    check(asset_contract.value != 0, "asset contract is required");
-    check(asset_type != 1, "token deposits must use token transfer with memo deposit:<tba_id>[:memo]");
-    check(asset_type != 2, "nft deposits must use gnos.ntoken transfer with memo deposit:<tba_id>[:memo]");
-    check(false, "unsupported asset type for direct deposit");
-}
-
 void tbaaccount::deposittoken(name owner, uint64_t tba_id, name token_contract, asset quantity, std::string memo) {
     require_auth(owner);
     check(token_contract.value != 0, "token contract is required");
@@ -227,29 +218,6 @@ void tbaaccount::genmanifest(uint64_t tba_id) {
     });
 }
 
-void tbaaccount::receivenft(uint64_t tba_id, name nft_contract, flon::nasset nft_quantity, std::string memo) {
-    require_auth(nft_contract);
-    check(nft_contract == ntoken_contract, "only gnos.ntoken custody is currently supported");
-    check(nft_quantity.amount > 0, "nft quantity must be positive");
-    check(nft_quantity.symbol.nid != 0, "nft symbol is required");
-
-    const name owner = require_tba_owner(tba_id);
-
-    gnos::tba_asset_table assets(get_self(), get_self().value);
-    const uint64_t asset_id = gnos::next_id(assets.available_primary_key());
-    assets.emplace(owner, [&](auto& row) {
-        row.id = asset_id;
-        row.tba_id = tba_id;
-        row.asset_type = 2;
-        row.asset_contract = nft_contract;
-        row.asset_ref_id = nft_quantity.symbol.nid;
-        row.nft_quantity = nft_quantity;
-        row.quantity = asset{0, symbol("NFT", 0)};
-        row.settlement_mode = gnos::deliverable;
-        row.memo = memo;
-    });
-}
-
 void tbaaccount::onnfttransfer(name from, name to, std::vector<flon::nasset> nft_assets, std::string memo) {
     if (to != get_self() || from == get_self()) {
         return;
@@ -257,11 +225,8 @@ void tbaaccount::onnfttransfer(name from, name to, std::vector<flon::nasset> nft
 
     std::string asset_memo;
     const uint64_t tba_id = parse_tba_deposit_memo(memo, asset_memo);
-    if (tba_id == 0) {
-        return;
-    }
-
     check(get_first_receiver() == ntoken_contract, "only gnos.ntoken deposits are supported");
+    check(tba_id != 0, "nft deposit memo must be deposit:<tba_id>[:memo]");
     const name owner = require_tba_owner(tba_id);
     check(from == owner, "only current tba owner can deposit nft assets");
 

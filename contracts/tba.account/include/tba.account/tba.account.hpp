@@ -8,9 +8,6 @@ public:
     using contract::contract;
 
     [[eosio::action]]
-    void deposit(uint64_t tba_id, uint8_t asset_type, eosio::name asset_contract, unsigned __int128 asset_ref_id, eosio::asset quantity, std::string memo);
-
-    [[eosio::action]]
     void deposittoken(eosio::name owner, uint64_t tba_id, eosio::name token_contract, eosio::asset quantity, std::string memo);
 
     [[eosio::action]]
@@ -24,9 +21,6 @@ public:
 
     [[eosio::action]]
     void genmanifest(uint64_t tba_id);
-
-    [[eosio::action]]
-    void receivenft(uint64_t tba_id, eosio::name nft_contract, flon::nasset nft_quantity, std::string memo);
 
     [[eosio::on_notify("gnos.ntoken::transfer")]]
     void onnfttransfer(eosio::name from, eosio::name to, std::vector<flon::nasset> assets, std::string memo);

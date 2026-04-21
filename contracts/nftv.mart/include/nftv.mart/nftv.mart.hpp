@@ -21,6 +21,9 @@ public:
     void buy(eosio::name buyer, uint64_t order_id);
 
     [[eosio::action]]
+    void setfee(uint16_t platform_bp, uint16_t creator_bp, uint16_t stake_bp, eosio::name platform_account, eosio::name stake_account);
+
+    [[eosio::action]]
     void setpaytoken(eosio::name token_contract, bool enabled);
 
 private:

@@ -39,6 +39,8 @@ void tbareg::createtba(name owner, name nft_contract, flon::nasset root_nft) {
     check_owner_balance(nft_contract, owner, root_nft);
 
     gnos::tba_map_table tbas(get_self(), get_self().value);
+    auto nft_idx = tbas.get_index<"bynft"_n>();
+    check(nft_idx.find(root_nft.symbol.nid) == nft_idx.end(), "tba already exists for root nft");
     const uint64_t tba_id = gnos::next_id(tbas.available_primary_key());
     tbas.emplace(owner, [&](auto& row) {
         row.tba_id = tba_id;

@@ -139,7 +139,7 @@ void nftvmart::transfer_nft(name from, name to, flon::nasset nft_quantity, std::
 }
 
 void nftvmart::distribute_fees(name token_contract, const gnos::order_t& order, name creator, const asset& quantity) {
-    gnos::fee_config_singleton config("gnos.dao"_n, "gnos.dao"_n.value);
+    gnos::fee_config_singleton config(get_self(), get_self().value);
     const gnos::fee_conf conf = config.get_or_default();
     check(conf.platform_bp + conf.creator_bp + conf.stake_bp <= 10000, "invalid fee config");
 
@@ -176,6 +176,21 @@ void nftvmart::distribute_fees(name token_contract, const gnos::order_t& order, 
         action(permission_level{get_self(), active_permission}, token_contract, "transfer"_n,
             std::make_tuple(get_self(), conf.stake_account, stake_share, std::string("gnos stake fee"))).send();
     }
+}
+
+void nftvmart::setfee(uint16_t platform_bp, uint16_t creator_bp, uint16_t stake_bp, name platform_account, name stake_account) {
+    require_auth(get_self());
+    check(platform_bp + creator_bp + stake_bp <= 10000, "fee basis points exceed 10000");
+
+    gnos::fee_conf conf;
+    conf.platform_bp = platform_bp;
+    conf.creator_bp = creator_bp;
+    conf.stake_bp = stake_bp;
+    conf.platform_account = platform_account;
+    conf.stake_account = stake_account;
+
+    gnos::fee_config_singleton config(get_self(), get_self().value);
+    config.set(conf, get_self());
 }
 
 void nftvmart::listnft(name seller, flon::nasset nft_quantity, name pay_token_contract, asset price) {
