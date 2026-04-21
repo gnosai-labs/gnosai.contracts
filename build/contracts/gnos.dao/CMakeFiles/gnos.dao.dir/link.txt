@@ -1,0 +1,1 @@
+/usr/bin/cdt-ld CMakeFiles/gnos.dao.dir/src/gnos.dao.cpp.obj -o gnos.dao.wasm 

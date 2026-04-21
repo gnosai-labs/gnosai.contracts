@@ -1,0 +1,8 @@
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/update_version.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/contracts_project.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/edit_cache.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/rebuild_cache.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/list_install_components.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/install.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/install/local.dir
+/Users/aaron/Documents/flon/gnos.contracts/build/CMakeFiles/install/strip.dir

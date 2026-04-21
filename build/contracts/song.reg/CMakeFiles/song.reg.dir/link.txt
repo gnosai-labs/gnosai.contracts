@@ -1,0 +1,1 @@
+/usr/bin/cdt-ld CMakeFiles/song.reg.dir/src/song.reg.cpp.obj -o song.reg.wasm 

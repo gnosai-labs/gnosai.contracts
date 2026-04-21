@@ -1,0 +1,48 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "flon::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "createmv",
+            "base": "",
+            "fields": [
+                {
+                    "name": "creator",
+                    "type": "name"
+                },
+                {
+                    "name": "song_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "mv_uri",
+                    "type": "string"
+                },
+                {
+                    "name": "mv_hash",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "meta_uri",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "createmv",
+            "type": "createmv",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": []
+}

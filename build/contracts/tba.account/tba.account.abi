@@ -1,0 +1,206 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "flon::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "deposit",
+            "base": "",
+            "fields": [
+                {
+                    "name": "tba_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "asset_type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "asset_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "asset_ref_id",
+                    "type": "uint128"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "deposittoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "tba_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "token_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "freezeassets",
+            "base": "",
+            "fields": [
+                {
+                    "name": "tba_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "asset_ids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "frozen_state",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "genmanifest",
+            "base": "",
+            "fields": [
+                {
+                    "name": "tba_id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "nasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "int64"
+                },
+                {
+                    "name": "symbol",
+                    "type": "nsymbol"
+                }
+            ]
+        },
+        {
+            "name": "nsymbol",
+            "base": "",
+            "fields": [
+                {
+                    "name": "nid",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "receivenft",
+            "base": "",
+            "fields": [
+                {
+                    "name": "tba_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nft_contract",
+                    "type": "name"
+                },
+                {
+                    "name": "nft_quantity",
+                    "type": "nasset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setmode",
+            "base": "",
+            "fields": [
+                {
+                    "name": "asset_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "settlement_mode",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "withdraw",
+            "base": "",
+            "fields": [
+                {
+                    "name": "tba_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "asset_id",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "deposit",
+            "type": "deposit",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "deposittoken",
+            "type": "deposittoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "freezeassets",
+            "type": "freezeassets",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "genmanifest",
+            "type": "genmanifest",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "receivenft",
+            "type": "receivenft",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setmode",
+            "type": "setmode",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "withdraw",
+            "type": "withdraw",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": []
+}

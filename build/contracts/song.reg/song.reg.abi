@@ -1,0 +1,75 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "flon::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "inventory_price",
+            "base": "",
+            "fields": [
+                {
+                    "name": "nft_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nft_price",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "setglobal",
+            "base": "",
+            "fields": [
+                {
+                    "name": "nfts_per_issue",
+                    "type": "uint32"
+                },
+                {
+                    "name": "nft_price",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "song_reg_global",
+            "base": "",
+            "fields": [
+                {
+                    "name": "nfts_per_issue",
+                    "type": "uint32"
+                },
+                {
+                    "name": "nft_price",
+                    "type": "asset"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "setglobal",
+            "type": "setglobal",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "global",
+            "type": "song_reg_global",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "invprices",
+            "type": "inventory_price",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": []
+}

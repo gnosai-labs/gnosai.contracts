@@ -1,0 +1,358 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "flon::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "addwhitelist",
+            "base": "",
+            "fields": [
+                {
+                    "name": "acct",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "base": "",
+            "fields": [
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "maximum_supply",
+                    "type": "int64"
+                },
+                {
+                    "name": "symbol",
+                    "type": "nsymbol"
+                },
+                {
+                    "name": "token_uri",
+                    "type": "string"
+                },
+                {
+                    "name": "ipowner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "delwhitelist",
+            "base": "",
+            "fields": [
+                {
+                    "name": "acct",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "issue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "nasset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "nasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "int64"
+                },
+                {
+                    "name": "symbol",
+                    "type": "nsymbol"
+                }
+            ]
+        },
+        {
+            "name": "nft_account_t",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balance",
+                    "type": "nasset"
+                },
+                {
+                    "name": "paused",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "nft_global_t",
+            "base": "",
+            "fields": [
+                {
+                    "name": "creators",
+                    "type": "name[]"
+                },
+                {
+                    "name": "notaries",
+                    "type": "name[]"
+                },
+                {
+                    "name": "whitelist",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "nft_stat_t",
+            "base": "",
+            "fields": [
+                {
+                    "name": "supply",
+                    "type": "nasset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "nasset"
+                },
+                {
+                    "name": "token_uri",
+                    "type": "string"
+                },
+                {
+                    "name": "ipowner",
+                    "type": "name"
+                },
+                {
+                    "name": "notary",
+                    "type": "name"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "issued_at",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "notarized_at",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "paused",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "notarize",
+            "base": "",
+            "fields": [
+                {
+                    "name": "notary",
+                    "type": "name"
+                },
+                {
+                    "name": "token_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "nsymbol",
+            "base": "",
+            "fields": [
+                {
+                    "name": "nid",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "retire",
+            "base": "",
+            "fields": [
+                {
+                    "name": "quantity",
+                    "type": "nasset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setcreator",
+            "base": "",
+            "fields": [
+                {
+                    "name": "creator",
+                    "type": "name"
+                },
+                {
+                    "name": "to_add",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "setipowner",
+            "base": "",
+            "fields": [
+                {
+                    "name": "symbid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "ip_owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "setnotary",
+            "base": "",
+            "fields": [
+                {
+                    "name": "notary",
+                    "type": "name"
+                },
+                {
+                    "name": "to_add",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "settokenuri",
+            "base": "",
+            "fields": [
+                {
+                    "name": "symbid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "url",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "transfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "assets",
+                    "type": "nasset[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "addwhitelist",
+            "type": "addwhitelist",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "create",
+            "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "delwhitelist",
+            "type": "delwhitelist",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "issue",
+            "type": "issue",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "notarize",
+            "type": "notarize",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "retire",
+            "type": "retire",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setcreator",
+            "type": "setcreator",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setipowner",
+            "type": "setipowner",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setnotary",
+            "type": "setnotary",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "settokenuri",
+            "type": "settokenuri",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "accounts",
+            "type": "nft_account_t",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "nftglobal",
+            "type": "nft_global_t",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokenstats",
+            "type": "nft_stat_t",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": []
+}

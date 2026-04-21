@@ -1,0 +1,1 @@
+/usr/bin/cdt-ld CMakeFiles/mv.reg.dir/src/mv.reg.cpp.obj -o mv.reg.wasm 

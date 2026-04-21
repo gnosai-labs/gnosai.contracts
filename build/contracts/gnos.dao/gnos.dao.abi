@@ -1,0 +1,44 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "flon::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "setfee",
+            "base": "",
+            "fields": [
+                {
+                    "name": "platform_bp",
+                    "type": "uint16"
+                },
+                {
+                    "name": "creator_bp",
+                    "type": "uint16"
+                },
+                {
+                    "name": "stake_bp",
+                    "type": "uint16"
+                },
+                {
+                    "name": "platform_account",
+                    "type": "name"
+                },
+                {
+                    "name": "stake_account",
+                    "type": "name"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "setfee",
+            "type": "setfee",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [],
+    "ricardian_clauses": [],
+    "variants": [],
+    "action_results": []
+}
