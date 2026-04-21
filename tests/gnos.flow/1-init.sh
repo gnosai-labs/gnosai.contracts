@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-song_reg=song2.reg
+song_reg=song.reg
 mv_reg=mv1.reg
 ntoken=gnos.ntoken
 tba_reg=tba1.reg
