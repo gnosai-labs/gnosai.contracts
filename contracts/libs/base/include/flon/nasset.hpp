@@ -8,15 +8,7 @@ namespace flon {
 struct nsymbol {
     uint64_t nid = 0;
 
-    static constexpr uint32_t U1E9 = 10'0000'0000UL;
-
     nsymbol() = default;
-
-    explicit nsymbol(uint32_t i, uint32_t p = 0) {
-        eosio::check(p < U1E9, "pid must be below 10**9");
-        eosio::check(i < U1E9, "id must be below 10**9");
-        nid = static_cast<uint64_t>(p) * U1E9 + i;
-    }
 
     explicit nsymbol(uint64_t n) : nid(n) {}
 
@@ -30,14 +22,6 @@ struct nsymbol {
 
     uint64_t raw() const {
         return nid;
-    }
-
-    uint32_t id() const {
-        return nid % U1E9;
-    }
-
-    uint32_t pid() const {
-        return nid / U1E9;
     }
 
     constexpr bool is_valid() const {
@@ -55,9 +39,7 @@ struct nasset {
 
     nasset() = default;
 
-    explicit nasset(const uint32_t& id) : symbol(id), amount(0) {}
-
-    explicit nasset(uint32_t id, uint32_t pid, int64_t amount = 0) : amount(amount), symbol(id, pid) {
+    explicit nasset(const uint64_t& nid) : symbol(nid), amount(0) {
         eosio::check(is_amount_within_range(), "magnitude of asset amount must be less than 2^62");
         eosio::check(symbol.is_valid(), "invalid symbol name");
     }
