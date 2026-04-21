@@ -1,1 +1,0 @@
-/usr/bin/cdt-ld CMakeFiles/nftv.mart.dir/src/nftv.mart.cpp.obj -o nftv.mart.wasm 

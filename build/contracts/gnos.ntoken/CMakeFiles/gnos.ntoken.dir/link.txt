@@ -1,1 +1,0 @@
-/usr/bin/cdt-ld CMakeFiles/gnos.ntoken.dir/src/gnos.ntoken.cpp.obj -o gnos.ntoken.wasm 
