@@ -26,12 +26,15 @@ static constexpr symbol cisum_symbol = symbol("CISUM", 4);
     { gnos::gnosntoken::transfer_action act{ bank, { {from, active_permission} } }; \
       act.send(from, to, assets, memo); }
 
-std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
+std::vector<std::string> split(const std::string& s, const std::string& delimiter, size_t max_parts = 0) {
     std::vector<std::string> result;
     size_t pos_start = 0;
     size_t pos_end;
     auto delim_len = delimiter.length();
     while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+        if (max_parts > 0 && result.size() + 1 == max_parts) {
+            break;
+        }
         result.emplace_back(s.substr(pos_start, pos_end - pos_start));
         pos_start = pos_end + delim_len;
     }
@@ -78,15 +81,19 @@ void check_cisum_price(const asset& nft_price) {
     check(nft_price.symbol == cisum_symbol, "nft price must be CISUM");
 }
 
-uint32_t songreg::parse_songcreate_memo(const std::string& memo, uint64_t& nft_id, std::string& token_uri) const {
-    const auto parts = split(memo, ":");
-    check(parts.size() == 4, "memo must be SONGCREATE:<quantity>:<nid>:<token_uri>");
+uint32_t songreg::parse_songcreate_memo(const std::string& memo, uint64_t& nft_id, std::string& token_uri, std::string& music_hash, std::string& music_url) const {
+    const auto parts = split(memo, ":", 6);
+    check(parts.size() == 6, "memo must be SONGCREATE:<quantity>:<nid>:<token_uri_or_hash>:<music_hash>:<music_url>");
     check(parts[0] == "SONGCREATE", "memo type must be SONGCREATE");
     check(!parts[3].empty(), "token_uri is required");
+    check(!parts[4].empty(), "music_hash is required");
+    check(!parts[5].empty(), "music_url is required");
 
     const uint32_t issue_count = parse_count(parts[1], "issue_count");
     nft_id = parse_nft_id(parts[2]);
     token_uri = parts[3];
+    music_hash = parts[4];
+    music_url = parts[5];
 
     return issue_count;
 }
@@ -102,13 +109,17 @@ uint32_t songreg::parse_songbuy_memo(const std::string& memo, uint64_t& nft_id) 
     return buy_count;
 }
 
-void songreg::create_song_nft(name creator, uint64_t nft_id, std::string token_uri, uint32_t issue_count, const song_reg_global& gstate) {
+void songreg::create_song_nft(name creator, uint64_t nft_id, std::string token_uri, std::string music_hash, std::string music_url, uint32_t issue_count, const song_reg_global& gstate) {
     check(nft_id > 0, "nft id is required");
     check(!token_uri.empty(), "token_uri is required");
+    check(!music_hash.empty(), "music_hash is required");
+    check(!music_url.empty(), "music_url is required");
     check(issue_count > 0, "issue_count must be positive");
 
     gnos::nft_stat_t::idx_t nft_stats(ntoken_contract, ntoken_contract.value);
     check(nft_stats.find(nft_id) == nft_stats.end(), "nft id already exists");
+    song_table songs(get_self(), get_self().value);
+    check(songs.find(nft_id) == songs.end(), "song already registered");
 
     const flon::nsymbol nft_symbol(nft_id);
 
@@ -140,6 +151,16 @@ void songreg::create_song_nft(name creator, uint64_t nft_id, std::string token_u
         std::vector<flon::nasset>{flon::nasset(issue_count, nft_symbol)},
         std::string("SONGNFTISSUE:") + std::to_string(issue_count) + ":" + std::to_string(nft_symbol.nid)
     );
+
+    songs.emplace(get_self(), [&](auto& row) {
+        const time_point_sec now = time_point_sec(current_time_point());
+        row.nid = nft_id;
+        row.creator = creator;
+        row.music_hash = music_hash;
+        row.music_url = music_url;
+        row.create_at = now;
+        row.update_at = now;
+    });
 }
 
 void songreg::buy_song_nft(name buyer, uint64_t nft_id, uint32_t buy_count) {
@@ -165,7 +186,7 @@ void songreg::buy_song_nft(name buyer, uint64_t nft_id, uint32_t buy_count) {
     );
 }
 
-// SONGCREATE:<issue_count>:<nid>:<token_uri_or_hash>
+// SONGCREATE:<issue_count>:<nid>:<token_uri_or_hash>:<music_hash>:<music_url>
 // SONGBUY:<buy_count>:<nid>
 void songreg::ontransfer(name from, name to, asset quantity, std::string memo) {
     if (to != get_self() || from == get_self()) {
@@ -188,9 +209,11 @@ void songreg::ontransfer(name from, name to, asset quantity, std::string memo) {
     uint64_t nft_id = 0;
     if (parts[0] == "SONGCREATE") {
         std::string token_uri;
-        const uint32_t issue_count = parse_songcreate_memo(memo, nft_id, token_uri);
+        std::string music_hash;
+        std::string music_url;
+        const uint32_t issue_count = parse_songcreate_memo(memo, nft_id, token_uri, music_hash, music_url);
         check(quantity.amount == expected_payment_amount(gstate.nft_price, issue_count), "payment quantity does not match SONGCREATE quantity");
-        create_song_nft(from, nft_id, token_uri, issue_count, gstate);
+        create_song_nft(from, nft_id, token_uri, music_hash, music_url, issue_count, gstate);
         return;
     }
 
