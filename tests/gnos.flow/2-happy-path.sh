@@ -18,7 +18,8 @@ buyer=mywallet2
 
 mv_hash="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 
-mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"300.0000 CISUM\",\"SONGCREATE:30:6000000000:song-1-json-hash:song-1-music-hash:ipfs://song-1.mp3\"]" -p $owner
+mpush $song_reg regsong "[\"$owner\",6000000000,\"song-1-json-hash\",\"song-1-music-hash\",\"ipfs://song-1.mp3\"]" -p $owner
+mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"300.0000 CISUM\",\"SONGCREATE:30:6000000000\"]" -p $owner
 mpush $song_reg setglobal "[100,\"20.0000 CISUM\"]" -p $song_reg
 mpush $pay_token transfer "[\"$buyer\",\"$song_reg\",\"40.0000 CISUM\",\"SONGBUY:2:6000000000\"]" -p $buyer
 mpush $song_reg setglobal "[100,\"10.0000 CISUM\"]" -p $song_reg
@@ -42,8 +43,8 @@ assert_table "$ntoken" "$ntoken" nftglobal \
   "gnos.ntoken only restricts creators and leaves transfers unrestricted"
 
 assert_table "$song_reg" "$song_reg" songs \
-  '.rows[] | select((.nid | tostring) == "6000000000" and .creator == "flonian" and .music_hash == "song-1-music-hash" and .music_url == "ipfs://song-1.mp3" and .create_at > 0 and .update_at > 0 and .create_at == .update_at)' \
-  "song.reg records song creator, music hash, music url, and timestamps"
+  '.rows[] | select((.nid | tostring) == "6000000000" and .creator == "flonian" and .token_url == "song-1-json-hash" and .music_hash == "song-1-music-hash" and .music_url == "ipfs://song-1.mp3" and .create_at > 0 and .update_at > 0 and .update_at >= .create_at)' \
+  "song.reg records song creator, token url, music hash, music url, and timestamps"
 
 assert_table "$mart" "$mart" paytokens \
   '.rows[] | select(.token_contract == "cisum.token" and .enabled == true)' \

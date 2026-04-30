@@ -12,10 +12,11 @@ buyer=flonian
 # 允许普通用户把 CISUM 转给 song.reg 这类消费合约
 mpush $payment_token addconsumewl "[\"$song_reg\"]" -p $payment_token
 
-# 创建歌曲 NFT：
+# 注册歌曲，并创建歌曲 NFT：
 # 当前 global 价格是 10.0000 CISUM
-# 创建 30 个给 creator，所以付款 30 * 10 = 300.0000 CISUM SONGCREATE:<issue_count>:<nid>:<token_uri_or_hash>:<music_hash>:<music_url>
-mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"300.0000 CISUM\",\"SONGCREATE:30:6000000001:song-2-json-hash:song-1-music-hash:ipfs://song-2.mp3\"]" -p $owner
+# 创建 30 个给 creator，所以付款 30 * 10 = 300.0000 CISUM SONGCREATE:<issue_count>:<nid>
+mpush $song_reg regsong "[\"$owner\",6000000008,\"song-9-json-hash\",\"song-9-music-hash\",\"ipfs://song-3.mp3\"]" -p $owner
+mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"300.0000 CISUM\",\"SONGCREATE:30:6000000008\"]" -p $owner
 
 # 修改当前全局价格为 20.0000 CISUM
 mpush $song_reg setglobal "[100,\"20.0000 CISUM\"]" -p $song_reg

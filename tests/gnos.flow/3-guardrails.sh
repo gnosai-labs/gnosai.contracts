@@ -32,9 +32,11 @@ expect_fail mpush $ntoken create "[\"$owner\",1,{\"nid\":6000000001},\"bad-direc
 mpush $ntoken transfer "[\"$owner\",\"$buyer\",[{\"amount\":1,\"symbol\":{\"nid\":6000000000}}],\"direct transfer allowed\"]" -p $owner
 mpush $ntoken transfer "[\"$buyer\",\"$owner\",[{\"amount\":1,\"symbol\":{\"nid\":6000000000}}],\"direct transfer return\"]" -p $buyer
 expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"10.0000 CISUM\",\"BADTYPE:1:6000000001:bad-song-hash\"]" -p $owner
+expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"10.0000 CISUM\",\"SONGCREATE:1:6000000001\"]" -p $owner
+mpush $song_reg regsong "[\"$owner\",6000000001,\"guardrail-json-hash\",\"guardrail-music-hash\",\"ipfs://guardrail-song.mp3\"]" -p $owner
 expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"10.0000 CISUM\",\"SONGCREATE:1:6000000001:old-song-hash\"]" -p $owner
-expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"10.0000 CISUM\",\"SONGCREATE:2:6000000001:bad-amount-song-hash:bad-music-hash:ipfs://bad-song.mp3\"]" -p $owner
-expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"1010.0000 CISUM\",\"SONGCREATE:101:6000000001:too-many-song-hash:too-many-music-hash:ipfs://too-many-song.mp3\"]" -p $owner
+expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"10.0000 CISUM\",\"SONGCREATE:2:6000000001\"]" -p $owner
+expect_fail mpush $pay_token transfer "[\"$owner\",\"$song_reg\",\"1010.0000 CISUM\",\"SONGCREATE:101:6000000001\"]" -p $owner
 expect_fail mpush $pay_token transfer "[\"$buyer\",\"$song_reg\",\"10.0000 CISUM\",\"SONGBUY:2:6000000000\"]" -p $buyer
 expect_fail mpush $pay_token transfer "[\"$buyer\",\"$song_reg\",\"10.0000 CISUM\",\"SONGBUY:1:9999999999\"]" -p $buyer
 expect_fail mpush $song_reg setglobal "[100,\"10.0000 FAKE\"]" -p $song_reg

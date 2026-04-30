@@ -2,6 +2,18 @@
 
 set -euo pipefail
 
+
+
+##用户支付创建歌曲的额度
+mreg flon gnos.vault flonian
+mtran flonian gnos.vault "100 FLON"
+mset gnos.vault gnos.vault
+mcli set account permission gnos.vault active --add-code
+
+
+mpush cisum.token addconsumewl '["gnos.vault"]' -p cisum.token
+
+
 song_reg=song.reg
 mv_reg=mv1.reg
 ntoken=gnos.ntoken
@@ -62,6 +74,5 @@ mpush $mart setfee "[100,500,400,\"$platform\",\"$stake\"]" -p $mart
 mpush $mart setpaytoken "[\"$payment_token\",true]" -p $mart
 mpush $payment_token addconsumewl "[\"$song_reg\"]" -p $payment_token
 mpush $ntoken setcreator "[\"$song_reg\",true]" -p $ntoken
-
 
 

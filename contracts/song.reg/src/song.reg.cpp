@@ -81,19 +81,13 @@ void check_cisum_price(const asset& nft_price) {
     check(nft_price.symbol == cisum_symbol, "nft price must be CISUM");
 }
 
-uint32_t songreg::parse_songcreate_memo(const std::string& memo, uint64_t& nft_id, std::string& token_uri, std::string& music_hash, std::string& music_url) const {
-    const auto parts = split(memo, ":", 6);
-    check(parts.size() == 6, "memo must be SONGCREATE:<quantity>:<nid>:<token_uri_or_hash>:<music_hash>:<music_url>");
+uint32_t songreg::parse_songcreate_memo(const std::string& memo, uint64_t& nft_id) const {
+    const auto parts = split(memo, ":");
+    check(parts.size() == 3, "memo must be SONGCREATE:<quantity>:<nid>");
     check(parts[0] == "SONGCREATE", "memo type must be SONGCREATE");
-    check(!parts[3].empty(), "token_uri is required");
-    check(!parts[4].empty(), "music_hash is required");
-    check(!parts[5].empty(), "music_url is required");
 
     const uint32_t issue_count = parse_count(parts[1], "issue_count");
     nft_id = parse_nft_id(parts[2]);
-    token_uri = parts[3];
-    music_hash = parts[4];
-    music_url = parts[5];
 
     return issue_count;
 }
@@ -109,19 +103,19 @@ uint32_t songreg::parse_songbuy_memo(const std::string& memo, uint64_t& nft_id) 
     return buy_count;
 }
 
-void songreg::create_song_nft(name creator, uint64_t nft_id, std::string token_uri, std::string music_hash, std::string music_url, uint32_t issue_count, const song_reg_global& gstate) {
+void songreg::create_song_nft(uint64_t nft_id, uint32_t issue_count, const song_reg_global& gstate) {
     check(nft_id > 0, "nft id is required");
-    check(!token_uri.empty(), "token_uri is required");
-    check(!music_hash.empty(), "music_hash is required");
-    check(!music_url.empty(), "music_url is required");
     check(issue_count > 0, "issue_count must be positive");
 
     gnos::nft_stat_t::idx_t nft_stats(ntoken_contract, ntoken_contract.value);
     check(nft_stats.find(nft_id) == nft_stats.end(), "nft id already exists");
     song_table songs(get_self(), get_self().value);
-    check(songs.find(nft_id) == songs.end(), "song already registered");
+    auto song_itr = songs.find(nft_id);
+    check(song_itr != songs.end(), "song is not registered");
 
     const flon::nsymbol nft_symbol(nft_id);
+    const name creator = song_itr->creator;
+    const std::string token_url = song_itr->token_url;
 
     check(gstate.nfts_per_issue > 0, "nfts_per_issue is required");
     check_cisum_price(gstate.nft_price);
@@ -133,7 +127,7 @@ void songreg::create_song_nft(name creator, uint64_t nft_id, std::string token_u
         get_self(),
         max_nft_supply,
         nft_symbol,
-        token_uri,
+        token_url,
         creator
     );
 
@@ -152,14 +146,8 @@ void songreg::create_song_nft(name creator, uint64_t nft_id, std::string token_u
         std::string("SONGNFTISSUE:") + std::to_string(issue_count) + ":" + std::to_string(nft_symbol.nid)
     );
 
-    songs.emplace(get_self(), [&](auto& row) {
-        const time_point_sec now = time_point_sec(current_time_point());
-        row.nid = nft_id;
-        row.creator = creator;
-        row.music_hash = music_hash;
-        row.music_url = music_url;
-        row.create_at = now;
-        row.update_at = now;
+    songs.modify(song_itr, same_payer, [&](auto& row) {
+        row.update_at = time_point_sec(current_time_point());
     });
 }
 
@@ -186,7 +174,32 @@ void songreg::buy_song_nft(name buyer, uint64_t nft_id, uint32_t buy_count) {
     );
 }
 
-// SONGCREATE:<issue_count>:<nid>:<token_uri_or_hash>:<music_hash>:<music_url>
+void songreg::regsong(name creator, uint64_t nid, std::string token_url, std::string music_hash, std::string music_url) {
+    require_auth(creator);
+    check(nid > 0, "nid is required");
+    check(!token_url.empty(), "token_url is required");
+    check(!music_hash.empty(), "music_hash is required");
+    check(!music_url.empty(), "music_url is required");
+
+    gnos::nft_stat_t::idx_t nft_stats(ntoken_contract, ntoken_contract.value);
+    check(nft_stats.find(nid) == nft_stats.end(), "nft id already exists");
+
+    song_table songs(get_self(), get_self().value);
+    check(songs.find(nid) == songs.end(), "song already registered");
+
+    songs.emplace(creator, [&](auto& row) {
+        const time_point_sec now = time_point_sec(current_time_point());
+        row.nid = nid;
+        row.creator = creator;
+        row.token_url = token_url;
+        row.music_hash = music_hash;
+        row.music_url = music_url;
+        row.create_at = now;
+        row.update_at = now;
+    });
+}
+
+// SONGCREATE:<issue_count>:<nid>
 // SONGBUY:<buy_count>:<nid>
 void songreg::ontransfer(name from, name to, asset quantity, std::string memo) {
     if (to != get_self() || from == get_self()) {
@@ -208,12 +221,9 @@ void songreg::ontransfer(name from, name to, asset quantity, std::string memo) {
 
     uint64_t nft_id = 0;
     if (parts[0] == "SONGCREATE") {
-        std::string token_uri;
-        std::string music_hash;
-        std::string music_url;
-        const uint32_t issue_count = parse_songcreate_memo(memo, nft_id, token_uri, music_hash, music_url);
+        const uint32_t issue_count = parse_songcreate_memo(memo, nft_id);
         check(quantity.amount == expected_payment_amount(gstate.nft_price, issue_count), "payment quantity does not match SONGCREATE quantity");
-        create_song_nft(from, nft_id, token_uri, music_hash, music_url, issue_count, gstate);
+        create_song_nft(nft_id, issue_count, gstate);
         return;
     }
 
